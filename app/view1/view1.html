@@ -1,0 +1,19 @@
+<div>
+    <h3>Options:</h3>
+    <label>Input:</label><br />
+    <form ng-submit="ProcessInput()">
+        &nbsp;&nbsp;<input type="text" placeholder="0,0,1,0,1,1,0,1,1,1" ng-model="Input.TextInput" />
+        <input type="submit" value="Run" />
+    </form>
+</div>
+<div class="output">
+    Output:<br />
+    {{Output.TextOutput}}<br />
+    <br />
+    <svg width=150 height="150" viewBox="0 0 150 150">
+        <g id="graphic"  transform="translate(75, 150) scale(10, -10)">
+            <polygon fill="#777" stroke="#555" stroke-width=".5" points="{{Output.polypoints}}" />
+            <circle cx="{{Output.point_x}}" cy="{{Output.point_y}}" r=".75" fill="purple" />
+         </g>
+    </svg>
+</div>
