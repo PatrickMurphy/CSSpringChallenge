@@ -89,6 +89,19 @@ angular.module('myApp.view1', ['ngRoute'])
                 var yDiff =y2 - y1;
                 var slope = yDiff / xDiff;
                 var areYPointsAbovePoint = (y1 > point_y) !== (y2 > point_y);
+                //so you need to check if this is equal.
+                //e.g. if point_x = (xDiff * (point_y - y1) / yDiff + x1));
+                // say we know y1 = mx1 + b
+                //for some x1 and y1
+                //then, given a y (the y of the point)
+                // we can calculate the corresponding x
+                // point_x = (point_y-b)/(m) = (point_y - (y1 - mx1))/(m) = (point_y - y1)/m + x1 --> 1/m = xdiff/ydiff
+                // then the point is on the edge.
+                
+                //used for accuracy of floating point
+                //if there is way to end the loop here we should, we are done if this is true
+                var onLine = (.000000001<= ((xDiff * (point_y - y1) / yDiff + x1) ) - point_x);
+                  
                 var isPointInsideX = (point_x < (xDiff * (point_y - y1) / yDiff + x1));
                 var doesIntersect = (areYPointsAbovePoint && isPointInsideX);
                 
@@ -98,8 +111,16 @@ angular.module('myApp.view1', ['ngRoute'])
                     $scope.Output.isInside = !$scope.Output.isInside;
                 }
             }
+            
+            
             if($scope.Output.isInside) {
                 $scope.Output.TextOutput = "Inside";
+                
+            if (onLine)
+            {
+              $scope.Output.isInside = false;
+              $scope.Output.TextOutput = "Outside";
+            }
             }
         };
 }]);
