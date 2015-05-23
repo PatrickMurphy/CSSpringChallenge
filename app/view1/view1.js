@@ -22,6 +22,7 @@ angular.module('myApp.view1', ['ngRoute'])
             polypoints: "0,0,0,0,0,0,0,0",
             TextOutput: "",
             isInside: false
+            isSimple: true;
         };
         
         
@@ -53,9 +54,19 @@ angular.module('myApp.view1', ['ngRoute'])
             
             // default response text = outside
             $scope.Output.TextOutput = 'Outside';
-            
+            try{
+              //check for cross over of edges
+              isSimplePolygon($scope.Input.CoordArray);
+              //we won't check this if isSimplePolygon() throws an error
+              isPointInside($scope.Input.CoordArray, $scope.Output.point_x, $scope.Output.point_y);
+            }
+            catch(err)
+            {
+              //not sure about this
+              $scope.Output.TextOutput = err;
+            }
             // inside or invalid response set by function: isPointInside()
-            isPointInside($scope.Input.CoordArray, $scope.Output.point_x, $scope.Output.point_y); 
+            
         };
         
         var getPointArray = function(PolyArrayIn){
@@ -66,6 +77,83 @@ angular.module('myApp.view1', ['ngRoute'])
                 }
             }
             return PolyArray;
+        };
+        
+        var isSimplePolygon = function (CoordArrayIn){
+          
+          slopes = [];
+          //y intersections
+          y_ints = [];
+          var numEdges = CoordArray.length - 1;
+          
+          
+          for (var i = 0, var j = CoordArrayIn.length-1; i < numEdges-1; j=i++)
+          { 
+            //m = rise/run
+            slopes[i] = (CoordArrayIn[i][1]-CoordArrayIn[j][1])/
+            (CoordArrayIn[i][0]-CoordArrayIn[j][0]);
+            //b = y-mx
+            y_ints[i] = (CoordArrayIn[i][1] - slopes[i]*CoordArrayIn[i][0];
+          }
+          
+          for (var i = 0; i < CoordArrayIn.length; i++)
+          { //the first edge must be handled differently
+            //since it is connected to the last edge
+            //so, we don't want to test it against the last edge
+            if (i === 0)
+            {
+              for (var x = (i+2); x < CoordArrayIn.length-1; x++)
+              { //find the intersection of the two lines that describe the edges
+                var x_intersection = (y_ints[i] - y_ints[x]) / (slopes[x] - slopes[i]);
+                var y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i]);
+                
+                //used to help us find the x_range and y_range of the edge
+                var min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[x][0]);
+                var min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[x][1]);
+                var max_x = Math.max(CoordArrayIn[i][0], CoordArrayIn[x][0]);
+                var max_y = Math.max(CoordArrayIn[i][1], CoordArrayIn[x][1]);
+                
+                //if the intersection is within the range of the edge
+                if (min_x <= x_intersection
+                  && x_intersecetion <= max_x
+                  && min_y <= y_interesection
+                  && y_intersection <= max_y)
+                {
+                  $scope.Output.isSimple = false;
+                  throw "Polygon not simple";
+                }
+                
+              }
+            }
+            //none of these are connected to the last edge
+            else 
+            {
+              for (var x = (i+2); x < CoordArrayIn.length; x++)
+              { //find the intersection of the two lines that describe the edges
+                var x_intersection = (y_ints[i] - y_ints[x]) / (slopes[x] - slopes[i]);
+                var y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i]);
+                
+                //used to help us find the x_range and y_range of the edge
+                var min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
+                var min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
+                var max_x = Math.max(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
+                var max_y = Math.max(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
+                
+                
+                //if the intersection is within the range of the edge
+                if (min_x <= x_intersection
+                  && x_intersecetion <= max_x
+                  && min_y <= y_interesection
+                  && y_intersection <= max_y)
+                {
+                  $scope.Output.isSimple = false;
+                  throw "Polygon not simple";
+                  
+                }
+              }
+            }
+          }
+          
         };
         
         var isPointInside = function (CoordArrayIn, point_x, point_y){
