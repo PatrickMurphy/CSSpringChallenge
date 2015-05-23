@@ -85,7 +85,8 @@ angular.module('myApp.view1', ['ngRoute'])
           //y intersections
           y_ints = [];
           var numEdges = CoordArrayIn.length - 1;
-
+          
+          //find slopes
           for (var m = 0, j = numEdges; m < numEdges+1; j=m++)
           {
             //division by zero is bad
@@ -110,8 +111,8 @@ angular.module('myApp.view1', ['ngRoute'])
             y_ints.push((CoordArrayIn[m][1] - slopes[m]*CoordArrayIn[m][0]));
             }
           }
-          //document.writeln(slopes.length);
-
+          
+          //iterate through edges, make sure non-consecutive edges don't intersect
           for (var i = 0; i < (numEdges+1); i++)
           { //the first edge must be handled differently
             //since it is connected to the last edge
@@ -160,19 +161,19 @@ angular.module('myApp.view1', ['ngRoute'])
                   x_intersection = (y_ints[i] - y_ints[x]) / (slopes[x] - slopes[i]);
                   y_intersection = (slopes[i]*x_intersection + y_ints[i]);
 
-                  //used to help us find the x_range and y_range of the edge
+                  //used to help us find the x_range and y_range of the edge_1
                   var edge_1_min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[numEdges][0]);
                   var edge_1_min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[numEdges][1]);
                   var edge_1_max_x = Math.max(CoordArrayIn[i][0], CoordArrayIn[numEdges][0]);
                   var edge_1_max_y = Math.max(CoordArrayIn[i][1], CoordArrayIn[numEdges][1]);
-
+                  //used to help us find the x_range and y_range of the edge_1
                   var edge_2_min_x = Math.min(CoordArrayIn[x][0], CoordArrayIn[x-1][0]);
                   var edge_2_min_y = Math.min(CoordArrayIn[x][1], CoordArrayIn[x-1][1]);
                   var edge_2_max_x = Math.max(CoordArrayIn[x][0], CoordArrayIn[x-1][0]);
                   var edge_2_max_y = Math.max(CoordArrayIn[x][1], CoordArrayIn[x-1][1]);
 
 
-                  //if the intersection is within the range of the edge
+                  //if the intersection is within the range of the edges
 
                    if (edge_1_min_x <= x_intersection &&
                    x_intersection <= edge_1_max_x &&
@@ -195,9 +196,6 @@ angular.module('myApp.view1', ['ngRoute'])
             {
               for (var y = (i+2); y < CoordArrayIn.length; y++)
               { //find the intersection of the two lines that describe the edges
-
-
-
                 //this if checks if the lines have the same slope
                 //if so no intersection possible
                 if (Math.abs((slopes[y] - slopes[i])) < 0.0001)
@@ -236,12 +234,12 @@ angular.module('myApp.view1', ['ngRoute'])
                   x_intersection = (y_ints[i] - y_ints[y]) / (slopes[y] - slopes[i]);
                   y_intersection = (slopes[i]*x_intersection + y_ints[i]);
 
-                  //used to help us find the x_range and y_range of the edges
+                  //used to help us find the x_range and y_range of the first edge
                   var edge_1_min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
                   var edge_1_min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
                   var edge_1_max_x = Math.max(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
                   var edge_1_max_y = Math.max(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
-
+                  //used to help us find the x_range and y_range of the second edge
                   var edge_2_min_x = Math.min(CoordArrayIn[y][0], CoordArrayIn[y-1][0]);
                   var edge_2_min_y = Math.min(CoordArrayIn[y][1], CoordArrayIn[y-1][1]);
                   var edge_2_max_x = Math.max(CoordArrayIn[y][0], CoordArrayIn[y-1][0]);
