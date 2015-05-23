@@ -89,11 +89,25 @@ angular.module('myApp.view1', ['ngRoute'])
           
           for (var i = 0, var j = CoordArrayIn.length-1; i < numEdges-1; j=i++)
           { 
-            //m = rise/run
+            //division by zero is bad
+            if (CoordArrayIn[i][0] === CoordArrayIn[j][0])
+            {
+              slopes[i] = 999999999999999999;
+              y_ints[i] = null;
+            
+            }
+            else if (CoordArrayIn[i][1] === CoordArrayIn[j][1])
+            {
+              slopes[i] = 0;
+              y_ints[i] = CoordArrayIn[i][1];
+            }
+            else
+            {
             slopes[i] = (CoordArrayIn[i][1]-CoordArrayIn[j][1])/
             (CoordArrayIn[i][0]-CoordArrayIn[j][0]);
             //b = y-mx
             y_ints[i] = (CoordArrayIn[i][1] - slopes[i]*CoordArrayIn[i][0];
+            }
           }
           
           for (var i = 0; i < CoordArrayIn.length; i++)
@@ -104,25 +118,65 @@ angular.module('myApp.view1', ['ngRoute'])
             {
               for (var x = (i+2); x < CoordArrayIn.length-1; x++)
               { //find the intersection of the two lines that describe the edges
-                var x_intersection = (y_ints[i] - y_ints[x]) / (slopes[x] - slopes[i]);
-                var y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i]);
+                var x_intersection,y_intersection;
                 
-                //used to help us find the x_range and y_range of the edge
-                var min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[x][0]);
-                var min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[x][1]);
-                var max_x = Math.max(CoordArrayIn[i][0], CoordArrayIn[x][0]);
-                var max_y = Math.max(CoordArrayIn[i][1], CoordArrayIn[x][1]);
+                //these two ifs check if the lines have the same slope
+                //if so no intersection possible
+                if (slopes[x] == null && slopes[i] == null)
+                  continue;
                 
-                //if the intersection is within the range of the edge
-                if (min_x <= x_intersection
-                  && x_intersecetion <= max_x
-                  && min_y <= y_interesection
-                  && y_intersection <= max_y)
-                {
-                  $scope.Output.isSimple = false;
-                  throw "Polygon not simple";
+                if (slopes[x] != null && slopes[i] != null &&
+                   (slopes[x] - slopes[i]) < .0001))
+                  continue;
+                
+                //From here until the last else, we are checking
+                //if one of the two lines is veritcal or horizontal
+                //to avoid any division by zeroes.
+                if (slopes[i] = 999999999999999999)
+                { 
+                  x_intersection = CoordArrayIn[i][0];
+                  if (slopes[x] === null)
+                  { 
+                    y_intersection = CoordArrayIn[x][1];
+                  }
+                  else
+                  {
+                    y_intersection = (slopes[x]*CoordArrayIn[x][0] + y_ints[x])
+                  }
                 }
-                
+                else if (slopes[x] = 999999999999999999)
+                { 
+                  x_intersection = CoordArrayIn[x][0];
+                  if (slopes[i] === null)
+                  { 
+                    y_intersection = CoordArrayIn[i][1];
+                  }
+                  else
+                  {
+                    y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i])
+                  }
+                }
+                else
+                {
+                  x_intersection = (y_ints[i] - y_ints[x]) / (slopes[x] - slopes[i]);
+                  y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i]);
+                  
+                  //used to help us find the x_range and y_range of the edge
+                  var min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[x][0]);
+                  var min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[x][1]);
+                  var max_x = Math.max(CoordArrayIn[i][0], CoordArrayIn[x][0]);
+                  var max_y = Math.max(CoordArrayIn[i][1], CoordArrayIn[x][1]);
+                  
+                  //if the intersection is within the range of the edge
+                  if (min_x <= x_intersection
+                    && x_intersecetion <= max_x
+                    && min_y <= y_interesection
+                    && y_intersection <= max_y)
+                  {
+                    $scope.Output.isSimple = false;
+                    throw "Polygon not simple";
+                  }
+                }
               }
             }
             //none of these are connected to the last edge
@@ -130,25 +184,66 @@ angular.module('myApp.view1', ['ngRoute'])
             {
               for (var x = (i+2); x < CoordArrayIn.length; x++)
               { //find the intersection of the two lines that describe the edges
-                var x_intersection = (y_ints[i] - y_ints[x]) / (slopes[x] - slopes[i]);
-                var y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i]);
+              var x_intersection,y_intersection;
                 
-                //used to help us find the x_range and y_range of the edge
-                var min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
-                var min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
-                var max_x = Math.max(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
-                var max_y = Math.max(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
+                //these two ifs check if the lines have the same slope
+                //if so no intersection possible
+                if (slopes[x] == null && slopes[i] == null)
+                  continue;
                 
+                if (slopes[x] != null && slopes[i] != null &&
+                   (slopes[x] - slopes[i]) < .0001))
+                  continue;
                 
-                //if the intersection is within the range of the edge
-                if (min_x <= x_intersection
-                  && x_intersecetion <= max_x
-                  && min_y <= y_interesection
-                  && y_intersection <= max_y)
+                //From here until the last else, we are checking
+                //if one of the two lines is veritcal or horizontal
+                //to avoid any division by zeroes.
+                if (slopes[i] = 999999999999999999)
+                { 
+                  x_intersection = CoordArrayIn[i][0];
+                  if (slopes[x] === null)
+                  { 
+                    y_intersection = CoordArrayIn[x][1];
+                  }
+                  else
+                  {
+                    y_intersection = (slopes[x]*CoordArrayIn[x][0] + y_ints[x])
+                  }
+                }
+                else if (slopes[x] = 999999999999999999)
+                { 
+                  x_intersection = CoordArrayIn[x][0];
+                  if (slopes[i] === null)
+                  { 
+                    y_intersection = CoordArrayIn[i][1];
+                  }
+                  else
+                  {
+                    y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i])
+                  }
+                }
+                
+                else
                 {
-                  $scope.Output.isSimple = false;
-                  throw "Polygon not simple";
+                  x_intersection = (y_ints[i] - y_ints[x]) / (slopes[x] - slopes[i]);
+                  y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i]);
                   
+                  //used to help us find the x_range and y_range of the edge
+                  var min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
+                  var min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
+                  var max_x = Math.max(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
+                  var max_y = Math.max(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
+                  
+                  
+                  //if the intersection is within the range of the edge
+                  if (min_x <= x_intersection
+                    && x_intersecetion <= max_x
+                    && min_y <= y_interesection
+                    && y_intersection <= max_y)
+                  {
+                    $scope.Output.isSimple = false;
+                    throw "Polygon not simple";
+                  }    
                 }
               }
             }
