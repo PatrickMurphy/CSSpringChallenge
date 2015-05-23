@@ -120,13 +120,9 @@ angular.module('myApp.view1', ['ngRoute'])
               { //find the intersection of the two lines that describe the edges
                 var x_intersection,y_intersection;
                 
-                //these two ifs check if the lines have the same slope
+                //this if checks if the lines have the same slope
                 //if so no intersection possible
-                if (slopes[x] == null && slopes[i] == null)
-                  continue;
-                
-                if (slopes[x] != null && slopes[i] != null &&
-                   (slopes[x] - slopes[i]) < .0001))
+                if (Math.abs((slopes[x] - slopes[i])) < .0001))
                   continue;
                 
                 //From here until the last else, we are checking
@@ -135,7 +131,7 @@ angular.module('myApp.view1', ['ngRoute'])
                 if (slopes[i] = 999999999999999999)
                 { 
                   x_intersection = CoordArrayIn[i][0];
-                  if (slopes[x] === null)
+                  if (slopes[x] === 0)
                   { 
                     y_intersection = CoordArrayIn[x][1];
                   }
@@ -147,7 +143,7 @@ angular.module('myApp.view1', ['ngRoute'])
                 else if (slopes[x] = 999999999999999999)
                 { 
                   x_intersection = CoordArrayIn[x][0];
-                  if (slopes[i] === null)
+                  if (slopes[i] === 0)
                   { 
                     y_intersection = CoordArrayIn[i][1];
                   }
@@ -186,13 +182,9 @@ angular.module('myApp.view1', ['ngRoute'])
               { //find the intersection of the two lines that describe the edges
               var x_intersection,y_intersection;
                 
-                //these two ifs check if the lines have the same slope
+                //this if checks if the lines have the same slope
                 //if so no intersection possible
-                if (slopes[x] == null && slopes[i] == null)
-                  continue;
-                
-                if (slopes[x] != null && slopes[i] != null &&
-                   (slopes[x] - slopes[i]) < .0001))
+                if (Math.abs((slopes[x] - slopes[i])) < .0001))
                   continue;
                 
                 //From here until the last else, we are checking
@@ -201,7 +193,7 @@ angular.module('myApp.view1', ['ngRoute'])
                 if (slopes[i] = 999999999999999999)
                 { 
                   x_intersection = CoordArrayIn[i][0];
-                  if (slopes[x] === null)
+                  if (slopes[x] === 0)
                   { 
                     y_intersection = CoordArrayIn[x][1];
                   }
@@ -213,7 +205,7 @@ angular.module('myApp.view1', ['ngRoute'])
                 else if (slopes[x] = 999999999999999999)
                 { 
                   x_intersection = CoordArrayIn[x][0];
-                  if (slopes[i] === null)
+                  if (slopes[i] === 0)
                   { 
                     y_intersection = CoordArrayIn[i][1];
                   }
