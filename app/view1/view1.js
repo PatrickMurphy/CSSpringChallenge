@@ -267,7 +267,7 @@ angular.module('myApp.view1', ['ngRoute'])
                 
                 
                 //point is on the line
-                if (((xDiff * (point_y - y1) / yDiff + x1) ) - point_x < .0001);
+                if ((Math.abs((xDiff * (point_y - y1) / yDiff + x1) ) - point_x) < .001);
                 {
                   $scope.Output.isInside = false;
                   $scope.Output.TextOutput = "Outside";
