@@ -21,8 +21,8 @@ angular.module('myApp.view1', ['ngRoute'])
             point_x: -20,
             polypoints: "0,0,0,0,0,0,0,0",
             TextOutput: "",
-            isInside: false
-            isSimple: true;
+            isInside: false,
+            isSimple: true
         };
         
         
@@ -81,19 +81,19 @@ angular.module('myApp.view1', ['ngRoute'])
         
         var isSimplePolygon = function (CoordArrayIn){
           
-          slopes = [];
+          var slopes = [];
           //y intersections
-          y_ints = [];
-          var numEdges = CoordArray.length - 1;
+         var y_ints = [];
+          var numEdges = CoordArrayIn.length - 1;
           
           
-          for (var i = 0, var j = CoordArrayIn.length-1; i < numEdges-1; j=i++)
+          for (var i = 0, j = CoordArrayIn.length-1; i < numEdges-1; j=i++)
           { 
             //m = rise/run
             slopes[i] = (CoordArrayIn[i][1]-CoordArrayIn[j][1])/
             (CoordArrayIn[i][0]-CoordArrayIn[j][0]);
             //b = y-mx
-            y_ints[i] = (CoordArrayIn[i][1] - slopes[i]*CoordArrayIn[i][0];
+            y_ints[i] = (CoordArrayIn[i][1] - slopes[i]*CoordArrayIn[i][0]);
           }
           
           for (var i = 0; i < CoordArrayIn.length; i++)
@@ -115,8 +115,8 @@ angular.module('myApp.view1', ['ngRoute'])
                 
                 //if the intersection is within the range of the edge
                 if (min_x <= x_intersection
-                  && x_intersecetion <= max_x
-                  && min_y <= y_interesection
+                  && x_intersection <= max_x
+                  && min_y <= y_intersection
                   && y_intersection <= max_y)
                 {
                   $scope.Output.isSimple = false;
@@ -142,8 +142,8 @@ angular.module('myApp.view1', ['ngRoute'])
                 
                 //if the intersection is within the range of the edge
                 if (min_x <= x_intersection
-                  && x_intersecetion <= max_x
-                  && min_y <= y_interesection
+                  && x_intersection <= max_x
+                  && min_y <= y_intersection
                   && y_intersection <= max_y)
                 {
                   $scope.Output.isSimple = false;
@@ -198,8 +198,7 @@ angular.module('myApp.view1', ['ngRoute'])
             }
 
             if($scope.Output.isInside) {
-                $scope.Output.TextOutput = "Inside";
-                
+                $scope.Output.TextOutput = "Inside";     
             }
         };
 }]);
