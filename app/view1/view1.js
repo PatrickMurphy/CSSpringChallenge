@@ -81,9 +81,9 @@ angular.module('myApp.view1', ['ngRoute'])
         
         var isSimplePolygon = function (CoordArrayIn){
 
-          slopes = [];
+          var slopes = [];
           //y intersections
-          y_ints = [];
+          var y_ints = [];
           var numEdges = CoordArrayIn.length - 1;
           
           //find slopes
