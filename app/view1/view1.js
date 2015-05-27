@@ -58,7 +58,8 @@ angular.module('myApp.view1', ['ngRoute'])
             $scope.Output.TextOutput = 'Outside';
             try{
               //check for cross over of edges
-              isSimplePolygon($scope.Input.CoordArray);
+              getSlopesAndIntercepts($scope.Input.CoordArray);
+              isSimplePolygon($scope.Input.CoordArray,$scope.Input.y_ints,$scope.Input.slopes);
               //we won't check this if isSimplePolygon() throws an error
               isPointInside($scope.Input.CoordArray, $scope.Output.point_x, $scope.Output.point_y);
             }
@@ -80,7 +81,8 @@ angular.module('myApp.view1', ['ngRoute'])
             }
             return PolyArray;
         };
-        var getSlopesandIntercepts = function(CoordArrayIn)
+        
+        var getSlopesAndIntercepts = function(CoordArrayIn)
         {
           var slopes = [];
           var y_ints = [];
@@ -112,61 +114,60 @@ angular.module('myApp.view1', ['ngRoute'])
           $scope.Input.slopes = slopes;
           
         }
-        var isSimplePolygon = function (CoordArrayIn,y_ints,slopes){
+        
+        var isSimplePolygon = function (CoordArrayIn, y_ints,slopes){
           
           //iterate through edges, make sure non-consecutive edges don't intersect
           for (var i = 0; i < (numEdges+1); i++)
           { 
-            
             var x_intersection,y_intersection;
             var min_x , min_y, max_x, max_y;
-            
             //the first edge must be handled differently
             //since it is connected to the last edge
             //so, we don't want to test it against the last edge
-            if (i === 0)
-            {
-              for (var x = (i+2); x < CoordArrayIn.length-1; x++)
-              { 
+            var lastEdge = CoordArrayIn.length;
+            if (i === 0) {lastEdge = CoordArrayIn.length-1;}
+            
+            for (var x = (i+2); x < CoordArrayIn.length-1; x++)
+            { 
 
-                //this if checks if the lines have the same slope
-                //if so no intersection possible
-                if (Math.abs((slopes[x] - slopes[i])) < .0001)
-                  continue;
+              //this if checks if the lines have the same slope
+              //if so no intersection possible
+              if (Math.abs((slopes[x] - slopes[i])) < .0001)
+                continue;
 
-                //From here until the last else, we are checking
-                //if one of the two lines is veritcal or horizontal
-                //to avoid any division by zeroes.
-                if (slopes[i] == 999999999999999999)
+              //From here until the last else, we are checking
+              //if one of the two lines is veritcal or horizontal
+              //to avoid any division by zeroes.
+              if (slopes[i] == 999999999999999999)
+              {
+                x_intersection = CoordArrayIn[i][0];
+                if (slopes[x] === 0)
                 {
-                  x_intersection = CoordArrayIn[i][0];
-                  if (slopes[x] === 0)
-                  {
-                    y_intersection = CoordArrayIn[x][1];
-                  }
-                  else
-                  {
-                    y_intersection = (slopes[x]*CoordArrayIn[x][0] + y_ints[x]);
-                  }
+                  y_intersection = CoordArrayIn[x][1];
                 }
-                else if (slopes[x] == 999999999999999999)
+                else
                 {
-                  x_intersection = CoordArrayIn[x][0];
-                  if (slopes[i] === 0)
-                  {
-                    y_intersection = CoordArrayIn[i][1];
-                  }
-                  else
-                  {
-                    y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i]);
-                  }
+                  y_intersection = (slopes[x]*CoordArrayIn[x][0] + y_ints[x]);
                 }
-                else  //both lines normal
+              }
+              else if (slopes[x] == 999999999999999999)
+              {
+                x_intersection = CoordArrayIn[x][0];
+                if (slopes[i] === 0)
                 {
-                  x_intersection = (y_ints[i] - y_ints[x]) / (slopes[x] - slopes[i]);
-                  y_intersection = (slopes[i]*x_intersection + y_ints[i]);
+                  y_intersection = CoordArrayIn[i][1];
                 }
-                
+                else
+                {
+                  y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i]);
+                }
+              }
+              else  //both lines normal
+              {
+                x_intersection = (y_ints[i] - y_ints[x]) / (slopes[x] - slopes[i]);
+                y_intersection = (slopes[i]*x_intersection + y_ints[i]);
+              }
                 //used to help us find the x_range and y_range of the edge_1
                 var edge_1_min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[numEdges][0]);
                 var edge_1_min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[numEdges][1]);
@@ -179,7 +180,6 @@ angular.module('myApp.view1', ['ngRoute'])
                 var edge_2_max_y = Math.max(CoordArrayIn[x][1], CoordArrayIn[x-1][1]);
 
                 //if the intersection is within the range of the edges
-
                 min_x = Math.max(edge_1_min_x , edge_2_min_x);
                 min_y = Math.max(edge_1_min_y , edge_2_min_y);
                 max_x = Math.min(edge_1_max_x , edge_2_max_x);
@@ -196,80 +196,7 @@ angular.module('myApp.view1', ['ngRoute'])
                   }
               }
             }
-            //none of these are connected to the last edge
-            else
-            {               //don't check edges that are supposed to be connected
-              for (var y = (i+2); y < CoordArrayIn.length; y++)
-              { //find the intersection of the two lines that describe the edges
-                //this if checks if the lines have the same slope
-                //if so no intersection possible
-                if (Math.abs((slopes[y] - slopes[i])) < 0.0001)
-                  continue;
-
-                //From here until the last else, we are checking
-                //if one of the two lines is veritcal or horizontal
-                //to avoid any division by zeroes.
-                if (slopes[i] == 999999999999999999)
-                {
-                  x_intersection = CoordArrayIn[i][0];
-                  if (slopes[y] === 0)
-                  {
-                    y_intersection = CoordArrayIn[y][1];
-                  }
-                  else
-                  {
-                    y_intersection = (slopes[y]*CoordArrayIn[y][0] + y_ints[y]);
-                  }
-                }
-                else if (slopes[y] == 999999999999999999)
-                {
-                  x_intersection = CoordArrayIn[y][0];
-                  if (slopes[i] === 0)
-                  {
-                    y_intersection = CoordArrayIn[i][1];
-                  }
-                  else
-                  {
-                    y_intersection = (slopes[i]*CoordArrayIn[i][0] + y_ints[i]);
-                  }
-                }
-
-                else
-                {
-                  x_intersection = (y_ints[i] - y_ints[y]) / (slopes[y] - slopes[i]);
-                  y_intersection = (slopes[i]*x_intersection + y_ints[i]);
-                }
-                
-                //used to help us find the x_range and y_range of the first edge
-                var edge_1_min_x = Math.min(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
-                var edge_1_min_y = Math.min(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
-                var edge_1_max_x = Math.max(CoordArrayIn[i][0], CoordArrayIn[i-1][0]);
-                var edge_1_max_y = Math.max(CoordArrayIn[i][1], CoordArrayIn[i-1][1]);
-                //used to help us find the x_range and y_range of the second edge
-                var edge_2_min_x = Math.min(CoordArrayIn[y][0], CoordArrayIn[y-1][0]);
-                var edge_2_min_y = Math.min(CoordArrayIn[y][1], CoordArrayIn[y-1][1]);
-                var edge_2_max_x = Math.max(CoordArrayIn[y][0], CoordArrayIn[y-1][0]);
-                var edge_2_max_y = Math.max(CoordArrayIn[y][1], CoordArrayIn[y-1][1]);
-
-                //if the intersection is within the range of the edges
-                min_x = Math.max(edge_1_min_x , edge_2_min_x);
-                min_y = Math.max(edge_1_min_y , edge_2_min_y);
-                max_x = Math.min(edge_1_max_x , edge_2_max_x);
-                max_y = Math.min(edge_1_max_y , edge_2_max_y);
-                 
-                if (min_x <= x_intersection &&
-                   x_intersection <= max_x &&
-                   min_y <= y_intersection &&
-                   y_intersection <= max_y )
-                {
-                  $scope.Output.isSimple = false;
-                  throw "Polygon not simple";
-                }
-              }
-            }
-          }
-
-};
+          };
         
         var isPointInside = function (CoordArrayIn, point_x, point_y){
             $scope.Output.isInside = false;
