@@ -13,7 +13,9 @@ angular.module('myApp.view1', ['ngRoute'])
         $scope.Input = {
             TextInput: "",
             array:[],
-            CoordArray: []
+            CoordArray: [],
+            y_ints: [],
+            slopes: []
         };
         
         $scope.Output = {
@@ -21,8 +23,8 @@ angular.module('myApp.view1', ['ngRoute'])
             point_x: -20,
             polypoints: "0,0,0,0,0,0,0,0",
             TextOutput: "",
-            isInside: false
-            isSimple: true;
+            isInside: false,
+            isSimple: true
         };
         
         
@@ -78,15 +80,12 @@ angular.module('myApp.view1', ['ngRoute'])
             }
             return PolyArray;
         };
-        
-        var isSimplePolygon = function (CoordArrayIn){
-
+        var getSlopesandIntercepts = function(CoordArrayIn)
+        {
           var slopes = [];
-          //y intersections
           var y_ints = [];
           var numEdges = CoordArrayIn.length - 1;
           
-          //find slopes
           for (var m = 0, j = numEdges; m < numEdges+1; j=m++)
           {
             // if x coordinates are the same edge is vertical
@@ -108,6 +107,12 @@ angular.module('myApp.view1', ['ngRoute'])
             y_ints.push((CoordArrayIn[m][1] - slopes[m]*CoordArrayIn[m][0]));
             }
           }
+          
+          $scope.Input.y_ints = y_ints;
+          $scope.Input.slopes = slopes;
+          
+        }
+        var isSimplePolygon = function (CoordArrayIn,y_ints,slopes){
           
           //iterate through edges, make sure non-consecutive edges don't intersect
           for (var i = 0; i < (numEdges+1); i++)
