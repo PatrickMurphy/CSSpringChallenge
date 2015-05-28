@@ -117,6 +117,7 @@ angular.module('myApp.view1', ['ngRoute'])
         
         var isSimplePolygon = function (CoordArrayIn, y_ints,slopes){
           
+          var numEdges = CoordArrayIn.length - 1;
           //iterate through edges, make sure non-consecutive edges don't intersect
           for (var i = 0; i < (numEdges+1); i++)
           { 
@@ -125,8 +126,8 @@ angular.module('myApp.view1', ['ngRoute'])
             //the first edge must be handled differently
             //since it is connected to the last edge
             //so, we don't want to test it against the last edge
-            var lastEdge = CoordArrayIn.length;
-            if (i === 0) {lastEdge = CoordArrayIn.length-1;}
+            var lastEdge = CoordArrayIn.length-1;
+            if (i > 0) {lastEdge = CoordArrayIn.length;}
             
             for (var x = (i+2); x < CoordArrayIn.length-1; x++)
             { 
